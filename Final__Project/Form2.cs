@@ -19,16 +19,9 @@ namespace Final__Project
             InitializeComponent();
         }
         string path = @"TextFile2.txt";
-        //string itemsToCollect = Form1.selecteditem + "\n";
         List<string> list = new List<string>();
         StreamReader reader;
-            
-           
-            
-        Form1 form1 = new Form1();
-        //Form8 form8 = new Form8();
-        public List<string> coll = new List<string>();
-        //DataSet1TableAdapters.CalculationsTableAdapter cal = new DataSet1TableAdapters.CalculationsTableAdapter();
+       
         
 
 
@@ -40,7 +33,24 @@ namespace Final__Project
             //    listBox1.Items.Add(item);
             //listBox1.Items.Add(list[length]);
             foreach (string item in list)
-                listBox1.Items.Add(item);
+            {
+                string lastItem = list[list.Count - 1];
+                if (item == list[list.Count - 1])
+                {
+                    if (listBox1.Items.Contains(lastItem))
+                    {
+                        MessageBox.Show("Item already in the list");
+                        return;
+
+                    }
+
+                    listBox1.Items.Add(lastItem);
+
+                    
+                }
+                 
+            }
+
 
 
 
@@ -52,28 +62,19 @@ namespace Final__Project
 
         private void Form2_Load(object sender, EventArgs e)
         {
-            //MessageBox.Show(Form1.selecteditem + "\n");
-            //string path = @"TextFile2.txt";
-            //File.WriteAllText(path, itemsToCollect);
-            // //string[] file2 = File.WriteAllLines(path, itemsList)
-            //File.AppendAllText(path, Form1.selecteditem + "\n");
-            //string[] file = File.ReadAllLines(path);
-            //foreach(var n in file)
-            //    listBox1.Items.Add(n);
             reader = File.OpenText(@"TextFile2.txt");
             while (!reader.EndOfStream)
             {
                 
                 list.Add(reader.ReadLine());
-                //
-                //for(int i = 0; i < length; i++)
-                //{
-                //    listBox1.Items.Add(list[i]);
-                //}
-                
                 
             }
             reader.Close();
+            foreach(string item in list)
+            {
+                if(list[list.Count - 1] != item)
+                    listBox1.Items.Add(item);
+            }
             //int length = list.Count - 1;
             
             //if (list.Count < length)
@@ -96,27 +97,27 @@ namespace Final__Project
 
         private void btnPrint_Click(object sender, EventArgs e)
         {
-            if (form1.radioButton1.Checked)
-            {
-                MessageBox.Show("yes");
-                //form8.lblDest.Text = "Beach";
+            //if (form1.radioButton1.Checked)
+            //{
+            //    MessageBox.Show("yes");
+            //    //form8.lblDest.Text = "Beach";
                 
-                //form8.lblPack.Text = "Surfing";
+            //    //form8.lblPack.Text = "Surfing";
                 
 
                 
                     
-            }
-            else if (form1.radioButton2.Checked)
-            {
-                //form8.lblDest.Text = "Mountains";
+            //}
+            //else if (form1.radioButton2.Checked)
+            //{
+            //    //form8.lblDest.Text = "Mountains";
 
-            }
-            if (form1.radioButton3.Checked)
-            {
-                //form8.lblDest.Text = "Desert";
+            //}
+            //if (form1.radioButton3.Checked)
+            //{
+            //    //form8.lblDest.Text = "Desert";
 
-            }
+            //}
             //form8.ShowDialog();
 
             
