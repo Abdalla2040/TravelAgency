@@ -36,15 +36,20 @@ namespace Final__Project
         //string[] file = File.ReadAllLines("TextFile1.txt");
         List<decimal> cal = new List<decimal>();
         
+        public void comboSelector(ComboBox combo)
+        {
+            Form2 form2 = new Form2();
+            writer = File.AppendText(@"TextFile2.txt");
+            writer.WriteLine(combo.Text);
+            writer.Close();
+            form2.ShowDialog();
+
+        }
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             if(radioButton1.Checked && comboBox1.SelectedIndex > -1)
             {
-                Form2 form2 = new Form2();
-                writer = File.AppendText(@"TextFile2.txt");
-                writer.WriteLine(comboBox1.Text);
-                writer.Close();
-                form2.ShowDialog();
+                comboSelector(comboBox1);
             }
             
         }
@@ -52,12 +57,18 @@ namespace Final__Project
 
         private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
         {
-            
+            if (radioButton2.Checked && comboBox2.SelectedIndex > -1)
+            {
+                comboSelector(comboBox2);
+            }
         }
 
         private void comboBox3_SelectedIndexChanged(object sender, EventArgs e)
         {
-           
+            if (radioButton3.Checked && comboBox3.SelectedIndex > -1)
+            {
+                comboSelector(comboBox3);
+            }
         }
     }
 }
