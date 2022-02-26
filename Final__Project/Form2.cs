@@ -34,21 +34,25 @@ namespace Final__Project
             //listBox1.Items.Add(list[length]);
             foreach (string item in list)
             {
-                string lastItem = list[list.Count - 1];
-                if (item == list[list.Count - 1])
-                {
-                    if (listBox1.Items.Contains(lastItem))
-                    {
-                        MessageBox.Show("Item already in the list");
-                        return;
+                int lastitmes = list.Count - 1;
+                if(item == list[lastitmes])
+                    listBox1.Items.Add(item);
 
-                    }
+                //string lastItem = list[list.Count - 1];
+                //if (item == list[list.Count - 1])
+                //{
+                //    if (listBox1.Items.Contains(lastItem))
+                //    {
+                //        MessageBox.Show("Item already in the list");
+                //        return;
 
-                    listBox1.Items.Add(lastItem);
+                //    }
 
-                    
-                }
-                 
+                //    listBox1.Items.Add(lastItem);
+
+
+                //}
+
             }
 
 
@@ -68,20 +72,28 @@ namespace Final__Project
                 
                 list.Add(reader.ReadLine());
                 
+                
             }
             reader.Close();
-            foreach(string item in list)
+          
+            for(int i = 0; i < list.Count-1; i++)
             {
-                if(list[list.Count - 1] != item)
-                    listBox1.Items.Add(item);
+                if (list.Count != list.Count - 1)
+                    listBox1.Items.Add(list[i]);
+
             }
+            //foreach(string item in list)
+            //{
+            //    if(list[list.Count - 1] != item)
+            //        listBox1.Items.Add(item);
+            //}
             //int length = list.Count - 1;
-            
+
             //if (list.Count < length)
             //    
-         
-                
-            
+
+
+
 
         }
 
