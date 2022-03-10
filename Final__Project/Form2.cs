@@ -14,125 +14,105 @@ namespace Final__Project
 {
     public partial class Form2 : Form
     {
+        //public static Form2 form2;
+        //public ListBox listbox;
         public Form2()
         {
             InitializeComponent();
+            //form2 = this;
+            //listbox = listBox1;
         }
-        string path = @"TextFile2.txt";
-        List<string> list = new List<string>();
-        StreamReader reader;
-       
         
-
+        string path = @"TextFile2.txt";
+        string path2 = @"TextFile3.txt";
+        StreamReader reader;
+        StreamWriter writer;
+        List<VacationPackage> vacationList = new List<VacationPackage>();
+        VacationPackage vacationSpots = new VacationPackage();
+        VacationPackage vacationSpots2 = new VacationPackage();
+        List<VacationPackage> temp = new List<VacationPackage>();
 
         private void btnAdd_Click(object sender, EventArgs e)
         {
-            // reader = File.OpenText(@"TextFile2.txt");
-            //int length = list.Count-1;
-            //foreach(string item in list)
-            //    listBox1.Items.Add(item);
-            //listBox1.Items.Add(list[length]);
-            foreach (string item in list)
+
+            ///DO NOT DELETE!!!
+            for (int i = 0; i <= vacationList.Count; i++)
             {
-                int lastitmes = list.Count - 1;
-                if(item == list[lastitmes])
-                    listBox1.Items.Add(item);
+                if (i == vacationList.Count - 1)
+                {
+                    writer = File.AppendText(path2);
+                    writer.WriteLine($"{vacationList[i].destination}, {vacationList[i].price}, {vacationList[i].tax}");
+                    vacationSpots2.destination = vacationList[i].destination;
+                    vacationSpots2.price = vacationList[i].price;
+                    vacationSpots2.tax = vacationList[i].tax;
+                    temp.Add(vacationSpots2);
+                    writer.Close();
+                    listBox1.Items.Add(vacationList[i].destination);
 
-                //string lastItem = list[list.Count - 1];
-                //if (item == list[list.Count - 1])
-                //{
-                //    if (listBox1.Items.Contains(lastItem))
-                //    {
-                //        MessageBox.Show("Item already in the list");
-                //        return;
-
-                //    }
-
-                //    listBox1.Items.Add(lastItem);
-
-
-                //}
-
+                }
             }
-
-
-
-
-
-
-
-
+            Form1.SelectedChanged += new Form1.Data(btnAdd_Click);
         }
 
         private void Form2_Load(object sender, EventArgs e)
         {
-            reader = File.OpenText(@"TextFile2.txt");
+            reader = File.OpenText(path);
             while (!reader.EndOfStream)
             {
-                
-                list.Add(reader.ReadLine());
-                
+                string[] delimiter = reader.ReadLine().Split(',');
+                vacationSpots.destination = delimiter[0];
+                vacationSpots.price = decimal.Parse(delimiter[1]);
+                vacationSpots.tax = decimal.Parse(delimiter[2]);
+                vacationList.Add(vacationSpots);
+            }
+            reader.Close();
+            
+            reader = File.OpenText(path2);
+            while (!reader.EndOfStream)
+            {
+                string[] delim = reader.ReadLine().Split(',');
+                vacationSpots2.destination = delim[0];
+                vacationSpots2.price = decimal.Parse(delim[1]);
+                vacationSpots2.tax = decimal.Parse(delim[2]);
+                listBox1.Items.Add(vacationSpots2.destination);
                 
             }
             reader.Close();
-          
-            for(int i = 0; i < list.Count-1; i++)
-            {
-                if (list.Count != list.Count - 1)
-                    listBox1.Items.Add(list[i]);
-
-            }
-            //foreach(string item in list)
-            //{
-            //    if(list[list.Count - 1] != item)
-            //        listBox1.Items.Add(item);
-            //}
-            //int length = list.Count - 1;
-
-            //if (list.Count < length)
-            //    
-
-
-
 
         }
 
         private void btnBack_Click(object sender, EventArgs e)
         {
+            
             this.Close();
         }
-
         private void btnDelete_Click(object sender, EventArgs e)
         {
-            listBox1.Items.Remove(listBox1.SelectedItem);
+            if (NotificationMessages.Deletion() == DialogResult.Yes)
+            {
+                var deletedItem = listBox1.SelectedItem;
+                var delete = listBox1.SelectedIndex;
+                listBox1.Items.Remove(deletedItem);
+                VacationPackage package = new VacationPackage();
+                temp.Clear();
+                List<string> lineToRemove = File.ReadAllLines(path2).Where(arg =>
+                                !string.IsNullOrWhiteSpace(arg)).ToList();
+                lineToRemove.RemoveAll(x => x.Split(',')[0].Equals(deletedItem));
+                File.WriteAllLines(@"TextFile3.txt", lineToRemove);
+                //lineToRemove.ForEach(x => x.Split(',').;
+                
+            }
+            else
+            {
+                return;
+            }
+            
         }
 
         private void btnPrint_Click(object sender, EventArgs e)
         {
-            //if (form1.radioButton1.Checked)
-            //{
-            //    MessageBox.Show("yes");
-            //    //form8.lblDest.Text = "Beach";
-                
-            //    //form8.lblPack.Text = "Surfing";
-                
-
-                
-                    
-            //}
-            //else if (form1.radioButton2.Checked)
-            //{
-            //    //form8.lblDest.Text = "Mountains";
-
-            //}
-            //if (form1.radioButton3.Checked)
-            //{
-            //    //form8.lblDest.Text = "Desert";
-
-            //}
-            //form8.ShowDialog();
-
-            
+            Form3 form3 = new Form3();
+            form3.ShowDialog();
         }
     }
 }

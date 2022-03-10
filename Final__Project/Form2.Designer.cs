@@ -105,9 +105,9 @@ namespace Final__Project
         #endregion
 
         public System.Windows.Forms.Button btnAdd;
-        public System.Windows.Forms.ListBox listBox1;
         public System.Windows.Forms.Button btnPrint;
         public System.Windows.Forms.Button btnDelete;
         public System.Windows.Forms.Button btnBack;
+        private System.Windows.Forms.ListBox listBox1;
     }
 }
