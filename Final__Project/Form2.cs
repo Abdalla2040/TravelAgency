@@ -31,10 +31,9 @@ namespace Final__Project
         VacationPackage vacationSpots = new VacationPackage();
         VacationPackage vacationSpots2 = new VacationPackage();
         List<VacationPackage> temp = new List<VacationPackage>();
-
+        List<VacationPackage> selectedPackages = new List<VacationPackage>();
         private void btnAdd_Click(object sender, EventArgs e)
         {
-
             ///DO NOT DELETE!!!
             for (int i = 0; i <= vacationList.Count; i++)
             {
@@ -46,16 +45,19 @@ namespace Final__Project
                     vacationSpots2.price = vacationList[i].price;
                     vacationSpots2.tax = vacationList[i].tax;
                     temp.Add(vacationSpots2);
+                    selectedPackages.Add(vacationSpots2);
                     writer.Close();
                     listBox1.Items.Add(vacationList[i].destination);
 
                 }
             }
-            Form1.SelectedChanged += new Form1.Data(btnAdd_Click);
+            Form1.SelectedChanged += new EventHandler(btnAdd_Click);
         }
 
         private void Form2_Load(object sender, EventArgs e)
         {
+            foreach (var s in selectedPackages)
+                    MessageBox.Show($"{s.destination}, {s.price}, {s.tax}");
             reader = File.OpenText(path);
             while (!reader.EndOfStream)
             {
@@ -67,7 +69,7 @@ namespace Final__Project
             }
             reader.Close();
             
-            reader = File.OpenText(path2);
+                reader = File.OpenText(path2);
             while (!reader.EndOfStream)
             {
                 string[] delim = reader.ReadLine().Split(',');
@@ -75,7 +77,6 @@ namespace Final__Project
                 vacationSpots2.price = decimal.Parse(delim[1]);
                 vacationSpots2.tax = decimal.Parse(delim[2]);
                 listBox1.Items.Add(vacationSpots2.destination);
-                
             }
             reader.Close();
 
@@ -83,7 +84,7 @@ namespace Final__Project
 
         private void btnBack_Click(object sender, EventArgs e)
         {
-            
+            Form1.backButtonChanged += new EventHandler(btnBack_Click);
             this.Close();
         }
         private void btnDelete_Click(object sender, EventArgs e)
@@ -99,14 +100,14 @@ namespace Final__Project
                                 !string.IsNullOrWhiteSpace(arg)).ToList();
                 lineToRemove.RemoveAll(x => x.Split(',')[0].Equals(deletedItem));
                 File.WriteAllLines(@"TextFile3.txt", lineToRemove);
-                //lineToRemove.ForEach(x => x.Split(',').;
                 
             }
             else
             {
                 return;
             }
-            
+            Form1.backButtonChanged += new EventHandler(btnDelete_Click);
+
         }
 
         private void btnPrint_Click(object sender, EventArgs e)
