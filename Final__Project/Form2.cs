@@ -82,14 +82,37 @@ namespace Final__Project
 
         }
 
+
+
         private void btnBack_Click(object sender, EventArgs e)
         {
-            Form1.backButtonChanged += new EventHandler(btnBack_Click);
+            //Form1 form1 = new Form1();
+            //Form1.PackCal pack = form1.PackageCalculations;
+            //pack();
+            //System.Diagnostics.Debug.Write(pack);
+            //form1.backButtonChanged += form1.PackageCalculations;
+            // Form1.backButtonChanged += refreshData;
+            // var data = RefreshData();
+            //foreach(var s in data)
+            // {
+            //     MessageBox.Show($"{s.destination}, {s.price}, {s.tax}");
+            // }
+            //var lines = File.ReadAllLines(path2).ToList();
+            //foreach(var s in lines)
+            //{
+            //    string[] strArray = s.Split(',');
+            Form1 form1 = new Form1();
+            Form1.backButtonChanged += new Form1.PackCal(form1.PackageCalculations);
+            //}
+            
             this.Close();
         }
-        private void btnDelete_Click(object sender, EventArgs e)
+      
+
+        public void RefreshData()
         {
-            if (NotificationMessages.Deletion() == DialogResult.Yes)
+            List<VacationPackage> whatsLeft = new List<VacationPackage>();
+            if (NotificationMessages.Deletion() == DialogResult.Yes && listBox1.Items.Count > 0)
             {
                 var deletedItem = listBox1.SelectedItem;
                 var delete = listBox1.SelectedIndex;
@@ -99,15 +122,28 @@ namespace Final__Project
                 List<string> lineToRemove = File.ReadAllLines(path2).Where(arg =>
                                 !string.IsNullOrWhiteSpace(arg)).ToList();
                 lineToRemove.RemoveAll(x => x.Split(',')[0].Equals(deletedItem));
-                File.WriteAllLines(@"TextFile3.txt", lineToRemove);
-                
-            }
-            else
-            {
-                return;
-            }
-            Form1.backButtonChanged += new EventHandler(btnDelete_Click);
+                //foreach (var s in lineToRemove) 
+                //{
+                //    string[] strArray = s.Split(',');
+                //    package.destination = strArray[0];
+                //    package.price = decimal.Parse(strArray[1]);
+                //    package.tax = decimal.Parse(strArray[2]);
+                //    whatsLeft.Add(package);
+                //}
 
+                File.WriteAllLines(@"TextFile3.txt", lineToRemove);
+                NotificationMessages.recordDeleted();
+                
+                this.Close();
+               
+            }
+        }
+        private void btnDelete_Click(object sender, EventArgs e)
+        {
+            //Form1.PackCal pack = refreshData;
+            //pack();
+            //Form1 form1 = new Form1();
+            RefreshData();
         }
 
         private void btnPrint_Click(object sender, EventArgs e)

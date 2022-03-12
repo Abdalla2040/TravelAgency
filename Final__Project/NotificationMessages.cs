@@ -16,6 +16,12 @@ namespace Final__Project
             string title = "Data Update Notification";
             MessageBox.Show(message, title, MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
+        public static void recordDeleted()
+        {
+            string message = "A record has been deleted from the list!";
+            string title = "Data Deletion Notification";
+            MessageBox.Show(message, title, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+        }
         public static void SceneryNotSelected(string scenery)
         {
             string message = $"Please select your {scenery} vacation destination!";

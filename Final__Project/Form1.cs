@@ -28,23 +28,22 @@ namespace Final__Project
             if (comboBox3.SelectedIndex == -1)
                 comboBox3.Text = "Options";
 
-             PackageCalculations();
-
+            PackCal pack = PackageCalculations;
+            pack();
 
 
         }
-        public delegate void PackCal(object sender, EventArgs e);
+        public delegate void PackCal();
 
         public void PackageCalculations()
         {
-
-            if (readPackage() != null)
+            var package = readPackage();
+            if (package != null)
             {
                 string name = "";
                 decimal price = 0m;
                 decimal tax = 0m;
-                var data = readPackage();
-                foreach (var vac in data)
+                foreach (var vac in package)
                 {
                     name = vac.destination;
                     price = vac.price;
@@ -52,20 +51,41 @@ namespace Final__Project
 
                     if (name.Contains("Surfing") || name.Contains("Scuba") || name.Contains("Jet"))
                     {
-                        decimal sub1 = data.Sum(x => x.price);
+                        decimal sub1 = package.Sum(x => x.price);
                         txtSub1.Text = sub1.ToString("C");
-                        decimal tax1 = data.Sum(x => x.tax);
+                        decimal tax1 = package.Sum(x => x.tax);
                         txtTax1.Text = tax1.ToString("C");
                         txtTotal1.Text = (sub1 + tax1).ToString("C");
                     }
                 }
             }
-            
+            //if (backButtonChanged != null)
+            //{
                 
+            //    var newData = readPackage();
+            //    foreach(var s in newData)
+            //    {
+            //        VacationPackage vacationPackage = new VacationPackage();
+            //        vacationPackage.destination = s.destination;
+            //        vacationPackage.price = s.price;
+            //        vacationPackage.tax = s.tax;
+
+            //        string path = @"TextFile3.txt";
+            //        if (File.Exists(path))
+            //            File.Delete(path);
+            //        writer = File.CreateText(path);
+            //        writer.WriteLine($"{vacationPackage.destination}, {vacationPackage.price}, {vacationPackage.tax}");
+            //        writer.Close();
+
+            //    }
+                
+            //}
+
+
         }
 
         public static event EventHandler SelectedChanged;
-        public static event EventHandler backButtonChanged;
+        public static event PackCal backButtonChanged;
         public void addPackage(VacationPackage vacationPackage)
         {
             ///DO NOT DELETE!!!
@@ -93,6 +113,7 @@ namespace Final__Project
                 vacation.tax = decimal.Parse(s[2]);
                 vacationList3.Add(vacation);
             }
+            
             return vacationList3;
 
         }
@@ -138,11 +159,15 @@ namespace Final__Project
                 Form2 form2 = new Form2();
                 form2.ShowDialog();
             }
-            if (SelectedChanged != null)
+            if (SelectedChanged != null || backButtonChanged != null)
             {
+                
                 var selectedVacationPackage = readPackage();
                 txtSub1.Text = selectedVacationPackage.Sum(x => x.price).ToString();
+                txtTax1.Text = selectedVacationPackage.Sum(x => x.tax).ToString();
+                txtTotal1.Text = (decimal.Parse(txtSub1.Text) + decimal.Parse(txtTax1.Text)).ToString();
             }
+            
             //if (backButtonChanged != null)
             //{
             //    PackageCalculations();
@@ -272,6 +297,9 @@ namespace Final__Project
         {
             Form2 form2 = new Form2();
             form2.ShowDialog();
+            PackCal pack = new PackCal(PackageCalculations);
+            pack();
+
         }
 
         private void btnPrint_Click(object sender, EventArgs e)
