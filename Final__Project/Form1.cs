@@ -35,65 +35,83 @@ namespace Final__Project
         }
         public delegate void PackCal();
 
-        public void PackageCalculations()
+        public void comboBoxTotals(List<VacationPackage> package, TextBox txtSub, TextBox txtTax, TextBox txtTotal)
         {
-            var package = readPackage();
-            if (package != null)
+            foreach (var vac in package)
             {
                 string name = "";
                 decimal price = 0m;
                 decimal tax = 0m;
-                foreach (var vac in package)
-                {
-                    name = vac.destination;
-                    price = vac.price;
-                    tax = vac.tax;
+                string scenery = "";
+                name = vac.destination;
+                price = vac.price;
+                tax = vac.tax;
+                scenery = vac.scenery;
+                var sub = from p in package
+                            group p by p.scenery into groupPrice
+                            select groupPrice.Sum(x => x.price);
+                var taxes = from p in package
+                            group p by p.scenery into groupTax
+                            select groupTax.Sum(x => x.tax);
+                foreach (var s in sub)
+                    txtSub.Text = s.ToString();
+                foreach (var s in taxes)
+                    txtTax.Text = s.ToString();
+                txtTotal.Text = (decimal.Parse(txtSub.Text) + decimal.Parse(txtTax.Text)).ToString();
 
-                    if (name.Contains("Surfing") || name.Contains("Scuba") || name.Contains("Jet"))
+            }
+        }
+
+        public void PackageCalculations()
+        {
+            var package = readPackage();
+            
+            if (package.Count > 0)
+            {
+               
+                var query = package.GroupBy(x => x.scenery).ToList();
+                foreach (var group in query)
+                {
+                    if (group.Key.Contains("Beach"))
                     {
-                        decimal sub1 = package.Sum(x => x.price);
-                        txtSub1.Text = sub1.ToString("C");
-                        decimal tax1 = package.Sum(x => x.tax);
-                        txtTax1.Text = tax1.ToString("C");
-                        txtTotal1.Text = (sub1 + tax1).ToString("C");
+                        //MessageBox.Show("group key: " + group.Key);
+                        comboBoxTotals(package, txtSub1, txtTax1, txtTotal1);
+                    }
+                    else if (group.Key.Contains("Mountain"))
+                    {
+                        comboBoxTotals(package,txtSub2, txtTax2, txtTotal2);
+                    }
+                    else if (group.Key.Contains("Desert"))
+                    {
+                        comboBoxTotals(package, txtSub3, txtTax3, txtTotal3);
                     }
                 }
+            
             }
-            //if (backButtonChanged != null)
-            //{
-                
-            //    var newData = readPackage();
-            //    foreach(var s in newData)
-            //    {
-            //        VacationPackage vacationPackage = new VacationPackage();
-            //        vacationPackage.destination = s.destination;
-            //        vacationPackage.price = s.price;
-            //        vacationPackage.tax = s.tax;
+            else
+            {
+                txtSub1.Text = "";
+                txtTax1.Text = "";
+                txtTotal1.Text = "";
+                txtSub2.Text = "";
+                txtTax2.Text = "";
+                txtTotal2.Text = "";
+                txtSub3.Text = "";
+                txtTax3.Text = "";
+                txtTotal3.Text = "";
 
-            //        string path = @"TextFile3.txt";
-            //        if (File.Exists(path))
-            //            File.Delete(path);
-            //        writer = File.CreateText(path);
-            //        writer.WriteLine($"{vacationPackage.destination}, {vacationPackage.price}, {vacationPackage.tax}");
-            //        writer.Close();
-
-            //    }
-                
-            //}
-
-
+            }
         }
 
         public static event EventHandler SelectedChanged;
         public static event PackCal backButtonChanged;
         public void addPackage(VacationPackage vacationPackage)
         {
-            ///DO NOT DELETE!!!
             string path = @"TextFile2.txt";
             if (File.Exists(path))
                 File.Delete(path);
             writer = File.CreateText(path);
-            writer.WriteLine($"{vacationPackage.destination}, {vacationPackage.price}, {vacationPackage.tax}");
+            writer.WriteLine(vacationPackage.ToString(vacationPackage));
             writer.Close();
         }
        
@@ -111,6 +129,8 @@ namespace Final__Project
                 vacation.destination = s[0];
                 vacation.price = decimal.Parse(s[1]);
                 vacation.tax = decimal.Parse(s[2]);
+                vacation.total = decimal.Parse(s[3]);
+                vacation.scenery = s[4];
                 vacationList3.Add(vacation);
             }
             
@@ -120,7 +140,6 @@ namespace Final__Project
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            List<VacationPackage> vacationList2 = new List<VacationPackage>();
             
             if (!radioButton1.Checked)
             {
@@ -135,6 +154,8 @@ namespace Final__Project
                 surfing.destination = comboBox1.SelectedItem.ToString();
                 surfing.price = 78.00m;
                 surfing.tax = 5.36m;
+                surfing.total = surfing.GetTotal(surfing);
+                surfing.scenery = "Beach";
                 addPackage(surfing);
                 Form2 form2 = new Form2();
                 form2.ShowDialog();
@@ -145,6 +166,8 @@ namespace Final__Project
                 ScubaDiving.destination = comboBox1.SelectedItem.ToString();
                 ScubaDiving.price = 88.00m;
                 ScubaDiving.tax = 6.05m;
+                ScubaDiving.total = ScubaDiving.GetTotal(ScubaDiving);
+                ScubaDiving.scenery = "Beach";
                 addPackage(ScubaDiving);
                 Form2 form2 = new Form2();
                 form2.ShowDialog();
@@ -155,30 +178,24 @@ namespace Final__Project
                 JetSkiing.destination = comboBox1.SelectedItem.ToString();
                 JetSkiing.price = 135.00m;
                 JetSkiing.tax = 9.28m;
+                JetSkiing.total = JetSkiing.GetTotal(JetSkiing);
+                JetSkiing.scenery = "Beach";
                 addPackage(JetSkiing);
                 Form2 form2 = new Form2();
                 form2.ShowDialog();
             }
             if (SelectedChanged != null || backButtonChanged != null)
             {
-                
-                var selectedVacationPackage = readPackage();
-                txtSub1.Text = selectedVacationPackage.Sum(x => x.price).ToString();
-                txtTax1.Text = selectedVacationPackage.Sum(x => x.tax).ToString();
-                txtTotal1.Text = (decimal.Parse(txtSub1.Text) + decimal.Parse(txtTax1.Text)).ToString();
-            }
-            
-            //if (backButtonChanged != null)
-            //{
-            //    PackageCalculations();
 
-            //}
+                PackageCalculations();
+                //txtSub1.Text = selectedVacationPackage.Sum(x => x.price).ToString();
+                //txtTax1.Text = selectedVacationPackage.Sum(x => x.tax).ToString();
+                //txtTotal1.Text = (decimal.Parse(txtSub1.Text) + decimal.Parse(txtTax1.Text)).ToString();
+            }
         }
 
         private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
         {
-            List<VacationPackage> vacationList2 = new List<VacationPackage>();
-            vacationList2.Clear();
             if (!radioButton2.Checked)
             {
                 NotificationMessages.SceneryNotSelected("Mountain");
@@ -192,14 +209,12 @@ namespace Final__Project
                 Skiing.destination = comboBox2.SelectedItem.ToString();
                 Skiing.price = 118.68m;
                 Skiing.tax = 8.16m;
-                vacationList2.Add(Skiing);
+                Skiing.total = Skiing.GetTotal(Skiing);
+                Skiing.scenery = "Mountain";
                 addPackage(Skiing);
                 Form2 form2 = new Form2();
                 form2.ShowDialog();
-                if (SelectedChanged != null)
-                {
-                    txtTotal2.Text = (decimal.Parse(txtSub1.Text) + decimal.Parse(txtTax1.Text)).ToString();
-                }
+                
 
             }
             else if (radioButton2.Checked && comboBox2.SelectedIndex == 1)
@@ -208,14 +223,12 @@ namespace Final__Project
                 HelicopterTour.destination = comboBox2.SelectedItem.ToString();
                 HelicopterTour.price = 168.99m;
                 HelicopterTour.tax = 11.62m;
-                vacationList2.Add(HelicopterTour);
+                HelicopterTour.total = HelicopterTour.GetTotal(HelicopterTour);
+                HelicopterTour.scenery = "Mountain";
                 addPackage(HelicopterTour);
                 Form2 form2 = new Form2();
                 form2.ShowDialog();
-                if (SelectedChanged != null)
-                {
-                   // readPackage(vacationList2, HelicopterTour, txtSub2, txtTax2, txtTotal2);
-                }
+                
             }
             else
             {
@@ -223,21 +236,25 @@ namespace Final__Project
                 SnowMobiling.destination = comboBox2.SelectedItem.ToString();
                 SnowMobiling.price = 138.89m;
                 SnowMobiling.tax = 9.55m;
-                vacationList2.Add(SnowMobiling);
+                SnowMobiling.total = SnowMobiling.GetTotal(SnowMobiling);
+                SnowMobiling.scenery = "Mountain";
                 addPackage(SnowMobiling);
                 Form2 form2 = new Form2();
                 form2.ShowDialog();
-                if (SelectedChanged != null)
-                {
-                   // readPackage(vacationList2, SnowMobiling, txtSub2, txtTax2, txtTotal2);
-                }
+              
+            }
+            if (SelectedChanged != null || backButtonChanged != null)
+            {
+
+                var selectedVacationPackage = readPackage();
+                txtSub2.Text = selectedVacationPackage.Sum(x => x.price).ToString();
+                txtTax2.Text = selectedVacationPackage.Sum(x => x.tax).ToString();
+                txtTotal2.Text = (decimal.Parse(txtSub2.Text) + decimal.Parse(txtTax2.Text)).ToString();
             }
         }
 
         private void comboBox3_SelectedIndexChanged(object sender, EventArgs e)
         {
-            List<VacationPackage> vacationList2 = new List<VacationPackage>();
-            vacationList2.Clear();
             if (!radioButton3.Checked)
             {
                 NotificationMessages.SceneryNotSelected("Desert");
@@ -251,14 +268,12 @@ namespace Final__Project
                 HorseBackRiding.destination = comboBox3.SelectedItem.ToString();
                 HorseBackRiding.price = 68.99m;
                 HorseBackRiding.tax = 4.74m;
-                vacationList2.Add(HorseBackRiding);
+                HorseBackRiding.total = HorseBackRiding.GetTotal(HorseBackRiding);
+                HorseBackRiding.scenery = "Desert";
                 addPackage(HorseBackRiding);
                 Form2 form2 = new Form2();
                 form2.ShowDialog();
-                if (SelectedChanged != null)
-                {
-                   // readPackage(vacationList2, HorseBackRiding, txtSub3, txtTax3, txtTotal3);
-                }
+               
 
             }
             else if (radioButton3.Checked && comboBox3.SelectedIndex == 1)
@@ -267,14 +282,12 @@ namespace Final__Project
                 WhiteWaterRafting.destination = comboBox3.SelectedItem.ToString();
                 WhiteWaterRafting.price = 88.99m;
                 WhiteWaterRafting.tax = 6.12m;
-                vacationList2.Add(WhiteWaterRafting);
+                WhiteWaterRafting.total = WhiteWaterRafting.GetTotal(WhiteWaterRafting);
+                WhiteWaterRafting.scenery = "Desert";
                 addPackage(WhiteWaterRafting);
                 Form2 form2 = new Form2();
                 form2.ShowDialog();
-                if (SelectedChanged != null)
-                {
-                  //  readPackage(vacationList2, WhiteWaterRafting, txtSub3, txtTax3, txtTotal3);
-                }
+               
             }
             else
             {
@@ -282,14 +295,20 @@ namespace Final__Project
                 GuidedHike.destination = comboBox3.SelectedItem.ToString();
                 GuidedHike.price = 78.89m;
                 GuidedHike.tax = 5.43m;
-                vacationList2.Add(GuidedHike);
+                GuidedHike.total = GuidedHike.GetTotal(GuidedHike);
+                GuidedHike.scenery = "Desert";
                 addPackage(GuidedHike);
                 Form2 form2 = new Form2();
                 form2.ShowDialog();
-                if (SelectedChanged != null)
-                {
-                  //  readPackage(vacationList2, GuidedHike, txtSub3, txtTax3, txtTotal3);
-                }
+               
+            }
+            if (SelectedChanged != null || backButtonChanged != null)
+            {
+
+                var selectedVacationPackage = readPackage();
+                txtSub3.Text = selectedVacationPackage.Sum(x => x.price).ToString();
+                txtTax3.Text = selectedVacationPackage.Sum(x => x.tax).ToString();
+                txtTotal3.Text = (decimal.Parse(txtSub3.Text) + decimal.Parse(txtTax3.Text)).ToString();
             }
         }
 
@@ -297,8 +316,9 @@ namespace Final__Project
         {
             Form2 form2 = new Form2();
             form2.ShowDialog();
-            PackCal pack = new PackCal(PackageCalculations);
-            pack();
+            //PackCal pack = new PackCal(PackageCalculations);
+            //pack();
+            PackageCalculations();
 
         }
 

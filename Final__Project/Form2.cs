@@ -40,10 +40,12 @@ namespace Final__Project
                 if (i == vacationList.Count - 1)
                 {
                     writer = File.AppendText(path2);
-                    writer.WriteLine($"{vacationList[i].destination}, {vacationList[i].price}, {vacationList[i].tax}");
+                    writer.WriteLine($"{vacationList[i].destination}, {vacationList[i].price}, {vacationList[i].tax}, {vacationList[i].total}, {vacationList[i].scenery}");
                     vacationSpots2.destination = vacationList[i].destination;
                     vacationSpots2.price = vacationList[i].price;
                     vacationSpots2.tax = vacationList[i].tax;
+                    vacationSpots2.total = vacationList[i].total;
+                    vacationSpots2.scenery = vacationList[i].scenery;
                     temp.Add(vacationSpots2);
                     selectedPackages.Add(vacationSpots2);
                     writer.Close();
@@ -56,15 +58,19 @@ namespace Final__Project
 
         private void Form2_Load(object sender, EventArgs e)
         {
-            foreach (var s in selectedPackages)
-                    MessageBox.Show($"{s.destination}, {s.price}, {s.tax}");
+            //foreach (var s in selectedPackages)
+            //        MessageBox.Show($"{s.destination}, {s.price}, {s.tax}");
             reader = File.OpenText(path);
             while (!reader.EndOfStream)
             {
                 string[] delimiter = reader.ReadLine().Split(',');
+                //foreach (var s in delimiter)
+                //    MessageBox.Show($"{s}");
                 vacationSpots.destination = delimiter[0];
                 vacationSpots.price = decimal.Parse(delimiter[1]);
                 vacationSpots.tax = decimal.Parse(delimiter[2]);
+                vacationSpots.total = decimal.Parse(delimiter[3]);
+                vacationSpots.scenery = delimiter[4];
                 vacationList.Add(vacationSpots);
             }
             reader.Close();
@@ -76,6 +82,8 @@ namespace Final__Project
                 vacationSpots2.destination = delim[0];
                 vacationSpots2.price = decimal.Parse(delim[1]);
                 vacationSpots2.tax = decimal.Parse(delim[2]);
+                vacationSpots2.total = decimal.Parse(delim[3]);
+                vacationSpots2.scenery = delim[4];
                 listBox1.Items.Add(vacationSpots2.destination);
             }
             reader.Close();
