@@ -14,125 +14,150 @@ namespace Final__Project
 {
     public partial class Form2 : Form
     {
+        //public static Form2 form2;
+        //public ListBox listbox;
         public Form2()
         {
             InitializeComponent();
+            //form2 = this;
+            //listbox = listBox1;
         }
-        string path = @"TextFile2.txt";
-        List<string> list = new List<string>();
-        StreamReader reader;
-       
         
-
-
+        string path = @"TextFile2.txt";
+        string path2 = @"TextFile3.txt";
+        StreamReader reader;
+        StreamWriter writer;
+        List<VacationPackage> vacationList = new List<VacationPackage>();
+        VacationPackage vacationSpots = new VacationPackage();
+        VacationPackage vacationSpots2 = new VacationPackage();
+        List<VacationPackage> temp = new List<VacationPackage>();
+        List<VacationPackage> selectedPackages = new List<VacationPackage>();
         private void btnAdd_Click(object sender, EventArgs e)
         {
-            // reader = File.OpenText(@"TextFile2.txt");
-            //int length = list.Count-1;
-            //foreach(string item in list)
-            //    listBox1.Items.Add(item);
-            //listBox1.Items.Add(list[length]);
-            foreach (string item in list)
+            ///DO NOT DELETE!!!
+            for (int i = 0; i <= vacationList.Count; i++)
             {
-                int lastitmes = list.Count - 1;
-                if(item == list[lastitmes])
-                    listBox1.Items.Add(item);
+                if (i == vacationList.Count - 1)
+                {
+                    writer = File.AppendText(path2);
+                    writer.WriteLine($"{vacationList[i].destination}, {vacationList[i].price}, {vacationList[i].tax}, {vacationList[i].total}, {vacationList[i].scenery}");
+                    vacationSpots2.destination = vacationList[i].destination;
+                    vacationSpots2.price = vacationList[i].price;
+                    vacationSpots2.tax = vacationList[i].tax;
+                    vacationSpots2.total = vacationList[i].total;
+                    vacationSpots2.scenery = vacationList[i].scenery;
+                    temp.Add(vacationSpots2);
+                    selectedPackages.Add(vacationSpots2);
+                    writer.Close();
+                    listBox1.Items.Add(vacationList[i].destination);
 
-                //string lastItem = list[list.Count - 1];
-                //if (item == list[list.Count - 1])
-                //{
-                //    if (listBox1.Items.Contains(lastItem))
-                //    {
-                //        MessageBox.Show("Item already in the list");
-                //        return;
-
-                //    }
-
-                //    listBox1.Items.Add(lastItem);
-
-
-                //}
-
+                }
             }
-
-
-
-
-
-
-
-
+            Form1.SelectedChanged += new EventHandler(btnAdd_Click);
         }
 
         private void Form2_Load(object sender, EventArgs e)
         {
-            reader = File.OpenText(@"TextFile2.txt");
+            //foreach (var s in selectedPackages)
+            //        MessageBox.Show($"{s.destination}, {s.price}, {s.tax}");
+            reader = File.OpenText(path);
             while (!reader.EndOfStream)
             {
-                
-                list.Add(reader.ReadLine());
-                
-                
+                string[] delimiter = reader.ReadLine().Split(',');
+                //foreach (var s in delimiter)
+                //    MessageBox.Show($"{s}");
+                vacationSpots.destination = delimiter[0];
+                vacationSpots.price = decimal.Parse(delimiter[1]);
+                vacationSpots.tax = decimal.Parse(delimiter[2]);
+                vacationSpots.total = decimal.Parse(delimiter[3]);
+                vacationSpots.scenery = delimiter[4];
+                vacationList.Add(vacationSpots);
             }
             reader.Close();
-          
-            for(int i = 0; i < list.Count-1; i++)
+            
+                reader = File.OpenText(path2);
+            while (!reader.EndOfStream)
             {
-                if (list.Count != list.Count - 1)
-                    listBox1.Items.Add(list[i]);
-
+                string[] delim = reader.ReadLine().Split(',');
+                vacationSpots2.destination = delim[0];
+                vacationSpots2.price = decimal.Parse(delim[1]);
+                vacationSpots2.tax = decimal.Parse(delim[2]);
+                vacationSpots2.total = decimal.Parse(delim[3]);
+                vacationSpots2.scenery = delim[4];
+                listBox1.Items.Add(vacationSpots2.destination);
             }
-            //foreach(string item in list)
-            //{
-            //    if(list[list.Count - 1] != item)
-            //        listBox1.Items.Add(item);
-            //}
-            //int length = list.Count - 1;
-
-            //if (list.Count < length)
-            //    
-
-
-
+            reader.Close();
 
         }
+
+
 
         private void btnBack_Click(object sender, EventArgs e)
         {
+            //Form1 form1 = new Form1();
+            //Form1.PackCal pack = form1.PackageCalculations;
+            //pack();
+            //System.Diagnostics.Debug.Write(pack);
+            //form1.backButtonChanged += form1.PackageCalculations;
+            // Form1.backButtonChanged += refreshData;
+            // var data = RefreshData();
+            //foreach(var s in data)
+            // {
+            //     MessageBox.Show($"{s.destination}, {s.price}, {s.tax}");
+            // }
+            //var lines = File.ReadAllLines(path2).ToList();
+            //foreach(var s in lines)
+            //{
+            //    string[] strArray = s.Split(',');
+            Form1 form1 = new Form1();
+            Form1.backButtonChanged += new Form1.PackCal(form1.PackageCalculations);
+            //}
+            
             this.Close();
         }
+      
 
+        public void RefreshData()
+        {
+            List<VacationPackage> whatsLeft = new List<VacationPackage>();
+            if (NotificationMessages.Deletion() == DialogResult.Yes && listBox1.Items.Count > 0)
+            {
+                var deletedItem = listBox1.SelectedItem;
+                var delete = listBox1.SelectedIndex;
+                listBox1.Items.Remove(deletedItem);
+                VacationPackage package = new VacationPackage();
+                temp.Clear();
+                List<string> lineToRemove = File.ReadAllLines(path2).Where(arg =>
+                                !string.IsNullOrWhiteSpace(arg)).ToList();
+                lineToRemove.RemoveAll(x => x.Split(',')[0].Equals(deletedItem));
+                //foreach (var s in lineToRemove) 
+                //{
+                //    string[] strArray = s.Split(',');
+                //    package.destination = strArray[0];
+                //    package.price = decimal.Parse(strArray[1]);
+                //    package.tax = decimal.Parse(strArray[2]);
+                //    whatsLeft.Add(package);
+                //}
+
+                File.WriteAllLines(@"TextFile3.txt", lineToRemove);
+                NotificationMessages.recordDeleted();
+                
+                this.Close();
+               
+            }
+        }
         private void btnDelete_Click(object sender, EventArgs e)
         {
-            listBox1.Items.Remove(listBox1.SelectedItem);
+            //Form1.PackCal pack = refreshData;
+            //pack();
+            //Form1 form1 = new Form1();
+            RefreshData();
         }
 
         private void btnPrint_Click(object sender, EventArgs e)
         {
-            //if (form1.radioButton1.Checked)
-            //{
-            //    MessageBox.Show("yes");
-            //    //form8.lblDest.Text = "Beach";
-                
-            //    //form8.lblPack.Text = "Surfing";
-                
-
-                
-                    
-            //}
-            //else if (form1.radioButton2.Checked)
-            //{
-            //    //form8.lblDest.Text = "Mountains";
-
-            //}
-            //if (form1.radioButton3.Checked)
-            //{
-            //    //form8.lblDest.Text = "Desert";
-
-            //}
-            //form8.ShowDialog();
-
-            
+            Form3 form3 = new Form3();
+            form3.ShowDialog();
         }
     }
 }
